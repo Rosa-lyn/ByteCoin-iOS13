@@ -16,7 +16,6 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
     @IBOutlet weak var currencyPicker: UIPickerView!
 
     var coinManager = CoinManager()
-    var selectedCurrency: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,15 +39,13 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
 
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         let selectedCurrency = coinManager.currencyArray[row]
-        self.selectedCurrency = selectedCurrency
         coinManager.getCoinPrice(for: selectedCurrency)
     }
 
-    func didUpdateCoinPrice(_ coinPrice: Double) {
-        let roundedRate = String(format: "%.2f", coinPrice)
+    func didUpdateCoinPrice(price: String, currency: String) {
         DispatchQueue.main.async {
-            self.bitCoinLabel.text = roundedRate
-            self.currencyLabel.text = self.selectedCurrency
+            self.bitCoinLabel.text = price
+            self.currencyLabel.text = currency
         }
     }
 
