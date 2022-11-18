@@ -8,18 +8,21 @@
 
 import UIKit
 
-class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
+class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate, CoinManagerDelegate {
+
 
     @IBOutlet weak var bitCoinLabel: UILabel!
     @IBOutlet weak var currencyLabel: UILabel!
     @IBOutlet weak var currencyPicker: UIPickerView!
 
-    let coinManager = CoinManager()
+    var coinManager = CoinManager()
+    var selectedCurrency: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         currencyPicker.dataSource = self
         currencyPicker.delegate = self
+        coinManager.delegate = self
     }
 
     // number of columns
@@ -37,7 +40,20 @@ class ViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDele
 
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         let selectedCurrency = coinManager.currencyArray[row]
+        self.selectedCurrency = selectedCurrency
         coinManager.getCoinPrice(for: selectedCurrency)
+    }
+
+    func didUpdateCoinPrice(_ coinPrice: Double) {
+        let roundedRate = String(format: "%.2f", coinPrice)
+        DispatchQueue.main.async {
+            self.bitCoinLabel.text = roundedRate
+            self.currencyLabel.text = self.selectedCurrency
+        }
+    }
+
+    func didFailWithError(_ error: Error) {
+        print(error)
     }
 }
 
